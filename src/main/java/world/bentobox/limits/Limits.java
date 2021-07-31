@@ -4,9 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 
+import net.luckperms.api.LuckPerms;
+
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.eclipse.jdt.annotation.Nullable;
 import world.bentobox.bentobox.api.addons.Addon;
 import world.bentobox.bentobox.api.addons.GameModeAddon;
@@ -17,6 +21,7 @@ import world.bentobox.limits.commands.PlayerCommand;
 import world.bentobox.limits.listeners.BlockLimitsListener;
 import world.bentobox.limits.listeners.EntityLimitListener;
 import world.bentobox.limits.listeners.JoinListener;
+import world.bentobox.limits.listeners.PermissionListener;
 
 
 /**
@@ -30,6 +35,9 @@ public class Limits extends Addon {
     private List<GameModeAddon> gameModes;
     private BlockLimitsListener blockLimitListener;
     private JoinListener joinListener;
+    private EntityLimitListener entityLimitListener;
+    private PermissionListener permissionListener;
+    private LuckPerms luckperms;
 
     @Override
     public void onDisable(){
@@ -57,12 +65,19 @@ public class Limits extends Addon {
             log("Limits will apply to " + gm.getDescription().getName());
         }
                 );
+
+        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+        if (provider != null) luckperms = provider.getProvider();
+
         // Register listener
         blockLimitListener = new BlockLimitsListener(this);
         registerListener(blockLimitListener);
         joinListener = new JoinListener(this);
         registerListener(joinListener);
-        registerListener(new EntityLimitListener(this));
+        entityLimitListener = new EntityLimitListener(this);
+        registerListener(entityLimitListener);
+        permissionListener = new PermissionListener(this, luckperms);
+        registerListener(permissionListener);
         // Done
     }
 

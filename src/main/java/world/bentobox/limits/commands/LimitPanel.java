@@ -13,6 +13,7 @@ import world.bentobox.bentobox.api.panels.builders.TabbedPanelBuilder;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.database.objects.Island;
 import world.bentobox.limits.Limits;
+import world.bentobox.limits.Util;
 import world.bentobox.limits.objects.IslandBlockCount;
 
 /**
@@ -54,7 +55,7 @@ public class LimitPanel {
         Player targetPlayer = Bukkit.getPlayer(target);
         if (targetPlayer != null) {
             // Update perms
-            addon.getJoinListener().checkPerms(targetPlayer, gm.getPermissionPrefix() + "island.limit.", island.getUniqueId(), gm.getDescription().getName());
+            Util.checkPerms(targetPlayer, gm.getPermissionPrefix() + "island.limit.", island.getUniqueId(), gm.getDescription().getName(), addon);
         }
         // Get the limits for this island
         IslandBlockCount ibc = addon.getBlockLimitListener().getIsland(island.getUniqueId());
