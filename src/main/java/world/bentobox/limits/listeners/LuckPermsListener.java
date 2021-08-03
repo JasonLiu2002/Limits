@@ -15,12 +15,12 @@ import world.bentobox.limits.objects.IslandBlockCount;
 
 import java.util.Objects;
 
-public class PermissionListener implements Listener {
+public class LuckPermsListener implements Listener {
 
 	private final Limits addon;
 	private final LuckPerms luckperms;
 
-	public PermissionListener(Limits addon, LuckPerms luckperms) {
+	public LuckPermsListener(Limits addon, LuckPerms luckperms) {
 		this.addon = addon;
 		this.luckperms = luckperms;
 		this.luckperms.getEventBus().subscribe(this.addon.getPlugin(), NodeAddEvent.class, this::onUserGroupChange);
@@ -34,7 +34,11 @@ public class PermissionListener implements Listener {
 		addon.getGameModes().forEach(gm -> {
 			if (addon.getIslands().hasIsland(gm.getOverWorld(), user.getUniqueId())) {
 				String islandId = Objects.requireNonNull(addon.getIslands().getIsland(gm.getOverWorld(), user.getUniqueId())).getUniqueId();
-				Util.checkPerms(player, gm.getPermissionPrefix() + "island.limit.", islandId, gm.getDescription().getName(), addon);
+				IslandBlockCount ibc = addon.getBlockLimitListener().getIsland(islandId);
+				if (Util.joinEventCheck(player, islandId, ibc, addon, true)) {
+					return;
+				}
+				Util.checkPerms(player, gm.getPermissionPrefix() + "island.limit.", islandId, gm.getDescription().getName(), addon, true);
 			}
 		});
 	}

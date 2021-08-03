@@ -55,7 +55,7 @@ public class LimitPanel {
         Player targetPlayer = Bukkit.getPlayer(target);
         if (targetPlayer != null) {
             // Update perms
-            Util.checkPerms(targetPlayer, gm.getPermissionPrefix() + "island.limit.", island.getUniqueId(), gm.getDescription().getName(), addon);
+            Util.checkPerms(targetPlayer, gm.getPermissionPrefix() + "island.limit.", island.getUniqueId(), gm.getDescription().getName(), addon, false);
         }
         // Get the limits for this island
         IslandBlockCount ibc = addon.getBlockLimitListener().getIsland(island.getUniqueId());

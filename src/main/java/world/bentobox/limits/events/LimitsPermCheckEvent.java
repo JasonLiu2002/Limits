@@ -30,19 +30,20 @@ public class LimitsPermCheckEvent extends LimitsJoinPermCheckEvent {
      * @param player - player joining
      * @param islandId - the unique island id.
      * @param ibc - IslandBlockCount object for this island
-     * @param material - material being limited, or null
-     * @param entityType - entity type being limited, or null
      * @param entgroup - entity group being limited, or null
+     * @param entityType - entity type being limited, or null
+     * @param material - material being limited, or null
      * @param value - numeric limit given by the perm
+     * @param isAsync - if the event should fire asynchronously
      */
     public LimitsPermCheckEvent(@NonNull Player player,
-            @NonNull String islandId,
-            @Nullable IslandBlockCount ibc,
-            @Nullable EntityGroup entgroup,
-            @Nullable EntityType entityType,
-            @Nullable Material material,
-            int value) {
-        super(player, islandId, ibc);
+                                @NonNull String islandId,
+                                @Nullable IslandBlockCount ibc,
+                                @Nullable EntityGroup entgroup,
+                                @Nullable EntityType entityType,
+                                @Nullable Material material,
+                                int value, boolean isAsync) {
+        super(player, islandId, ibc, isAsync);
         this.entityGroup = entgroup;
         this.entityType = entityType;
         this.material = material;

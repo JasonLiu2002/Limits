@@ -21,7 +21,7 @@ import world.bentobox.limits.commands.PlayerCommand;
 import world.bentobox.limits.listeners.BlockLimitsListener;
 import world.bentobox.limits.listeners.EntityLimitListener;
 import world.bentobox.limits.listeners.JoinListener;
-import world.bentobox.limits.listeners.PermissionListener;
+import world.bentobox.limits.listeners.LuckPermsListener;
 
 
 /**
@@ -36,8 +36,7 @@ public class Limits extends Addon {
     private BlockLimitsListener blockLimitListener;
     private JoinListener joinListener;
     private EntityLimitListener entityLimitListener;
-    private PermissionListener permissionListener;
-    private LuckPerms luckperms;
+    private LuckPermsListener permissionListener;
 
     @Override
     public void onDisable(){
@@ -66,8 +65,7 @@ public class Limits extends Addon {
         }
                 );
 
-        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-        if (provider != null) luckperms = provider.getProvider();
+        RegisteredServiceProvider<LuckPerms> luckPermsProvider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 
         // Register listener
         blockLimitListener = new BlockLimitsListener(this);
@@ -76,8 +74,10 @@ public class Limits extends Addon {
         registerListener(joinListener);
         entityLimitListener = new EntityLimitListener(this);
         registerListener(entityLimitListener);
-        permissionListener = new PermissionListener(this, luckperms);
-        registerListener(permissionListener);
+        if (luckPermsProvider != null) {
+            permissionListener = new LuckPermsListener(this, luckPermsProvider.getProvider());
+            registerListener(permissionListener);
+        }
         // Done
     }
 

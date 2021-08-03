@@ -72,29 +72,12 @@ public class JoinListener implements Listener {
             if (addon.getIslands().hasIsland(gm.getOverWorld(), e.getPlayer().getUniqueId())) {
                 String islandId = Objects.requireNonNull(addon.getIslands().getIsland(gm.getOverWorld(), e.getPlayer().getUniqueId())).getUniqueId();
                 IslandBlockCount ibc = addon.getBlockLimitListener().getIsland(islandId);
-                if (joinEventCheck(e.getPlayer(), islandId, ibc)) {
+                if (Util.joinEventCheck(e.getPlayer(), islandId, ibc, addon, false)) {
                     return;
                 }
-                Util.checkPerms(e.getPlayer(), gm.getPermissionPrefix() + "island.limit.", islandId, gm.getDescription().getName(), addon);
+                Util.checkPerms(e.getPlayer(), gm.getPermissionPrefix() + "island.limit.", islandId, gm.getDescription().getName(), addon, false);
             }
         });
-    }
-
-    private boolean joinEventCheck(Player player, String islandId, IslandBlockCount ibc) {
-        // Fire event, so other addons can cancel this permissions change
-        LimitsJoinPermCheckEvent e = new LimitsJoinPermCheckEvent(player, islandId, ibc);
-        Bukkit.getPluginManager().callEvent(e);
-        if (e.isCancelled()) {
-            return true;
-        }
-        // Get ibc from event if it has changed
-        ibc = e.getIbc();
-        // If perms should be ignored, but the IBC given in the event used, then set it and return
-        if (e.isIgnorePerms() && ibc != null) {
-            addon.getBlockLimitListener().setIsland(islandId, ibc);
-            return true;
-        }
-        return false;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -129,7 +112,7 @@ public class JoinListener implements Listener {
                 String prefix = addon.getGameModePermPrefix(world);
                 String name = addon.getGameModeName(world);
                 if (!prefix.isEmpty() && !name.isEmpty() && owner.getPlayer() != null) {
-                    Util.checkPerms(Objects.requireNonNull(owner.getPlayer()), prefix + "island.limit.", island.getUniqueId(), name, addon);
+                    Util.checkPerms(Objects.requireNonNull(owner.getPlayer()), prefix + "island.limit.", island.getUniqueId(), name, addon, false);
                 }
             }
         }

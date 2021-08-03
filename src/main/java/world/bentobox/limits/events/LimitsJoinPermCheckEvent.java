@@ -27,10 +27,11 @@ public class LimitsJoinPermCheckEvent extends BentoBoxEvent implements Cancellab
      * on the player's permissions. If cancelled, no limit settings will be made.
      * @param player - player joining
      * @param islandId - the unique island id.
-     *  @param ibc - IslandBlockCount object for this island
+     * @param ibc - IslandBlockCount object for this island
+     * @param isAsync - if the event should fire asynchronously or synchronously
      */
-    public LimitsJoinPermCheckEvent(@NonNull Player player, @NonNull String islandId, @Nullable IslandBlockCount ibc) {
-        super();
+    public LimitsJoinPermCheckEvent(@NonNull Player player, @NonNull String islandId, @Nullable IslandBlockCount ibc, boolean isAsync) {
+        super(isAsync);
         this.player = player;
         this.islandId = islandId;
         this.ibc = ibc;

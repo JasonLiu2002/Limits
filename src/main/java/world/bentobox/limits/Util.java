@@ -9,6 +9,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import world.bentobox.bentobox.api.addons.Addon;
+import world.bentobox.limits.events.LimitsJoinPermCheckEvent;
 import world.bentobox.limits.events.LimitsPermCheckEvent;
 import world.bentobox.limits.objects.IslandBlockCount;
 
@@ -22,8 +23,10 @@ public class Util {
 	 * @param permissionPrefix - permission prefix for this game mode
 	 * @param islandId - island string id
 	 * @param gameMode - game mode string doing the checking
+	 * @param addon - reference to the Limits addon
+	 * @param isAsync - Whether or not the check should fire asynchronously
 	 */
-	public static void checkPerms(Player player, String permissionPrefix, String islandId, String gameMode, Limits addon) {
+	public static void checkPerms(Player player, String permissionPrefix, String islandId, String gameMode, Limits addon, boolean isAsync) {
 		IslandBlockCount ibc = addon.getBlockLimitListener().getIsland(islandId);
 		// Check permissions
 		if (ibc != null) {
@@ -57,7 +60,7 @@ public class Util {
 			// Get the value
 			int value = Integer.parseInt(split[4]);
 			// Fire perm check event
-			LimitsPermCheckEvent l = new LimitsPermCheckEvent(player, islandId, ibc, entgroup, et, m, value);
+			LimitsPermCheckEvent l = new LimitsPermCheckEvent(player, islandId, ibc, entgroup, et, m, value, isAsync);
 			Bukkit.getPluginManager().callEvent(l);
 			if (l.isCancelled()) continue;
 			// Use event values
@@ -123,7 +126,23 @@ public class Util {
 				ibc.setEntityLimit(et, Math.max(ibc.getEntityLimit(et), value));
 			}
 		}
+	}
 
+	public static boolean joinEventCheck(Player player, String islandId, IslandBlockCount ibc, Limits addon, boolean isAsync) {
+		// Fire event, so other addons can cancel this permissions change
+		LimitsJoinPermCheckEvent e = new LimitsJoinPermCheckEvent(player, islandId, ibc, isAsync);
+		Bukkit.getPluginManager().callEvent(e);
+		if (e.isCancelled()) {
+			return true;
+		}
+		// Get ibc from event if it has changed
+		ibc = e.getIbc();
+		// If perms should be ignored, but the IBC given in the event used, then set it and return
+		if (e.isIgnorePerms() && ibc != null) {
+			addon.getBlockLimitListener().setIsland(islandId, ibc);
+			return true;
+		}
+		return false;
 	}
 
 }
