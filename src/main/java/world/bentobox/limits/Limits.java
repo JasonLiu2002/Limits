@@ -76,7 +76,6 @@ public class Limits extends Addon {
         registerListener(entityLimitListener);
         if (luckPermsProvider != null) {
             permissionListener = new LuckPermsListener(this, luckPermsProvider.getProvider());
-            registerListener(permissionListener);
         }
         // Done
     }
